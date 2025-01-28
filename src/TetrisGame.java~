@@ -7,14 +7,9 @@ import java.awt.event.KeyListener;
 import java.util.Random;
 
 public class TetrisGame extends JPanel implements ActionListener, KeyListener {
-    private static final int BOARD_WIDTH = 10;
-    private static final int BOARD_HEIGHT = 20;
-    private static final int TILE_SIZE = 25;
-    private static final int PANEL_WIDTH = BOARD_WIDTH * TILE_SIZE + 150; // Extra width for score and next piece
-    private static final int PANEL_HEIGHT = BOARD_HEIGHT * TILE_SIZE;
-    private static final Color PLAYABLE_AREA_COLOR = Color.BLACK;
-    private static final Color BARRIER_COLOR = Color.DARK_GRAY;
-    private static final Color INFO_PANEL_COLOR = Color.LIGHT_GRAY;
+    private static final int BOARD_WIDTH = 10; // Adjusted width
+    private static final int BOARD_HEIGHT = 20; // Adjusted height
+    private static final int TILE_SIZE = 25; // Adjusted tile size
     private static final Color[] COLORS = {
             Color.BLACK, Color.CYAN, Color.BLUE, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED
     };
@@ -36,14 +31,14 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
     private int currentX, currentY;
     private boolean isGameOver = false;
     private int score = 0;
-    private long startTime;
-    private int speed = 500;
+    private long startTime; // For bonus scoring based on time
+    private int speed = 500; // Initial speed (milliseconds)
 
     private Timer timer;
 
     public TetrisGame() {
-        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-        setBackground(PLAYABLE_AREA_COLOR);
+        setPreferredSize(new Dimension(BOARD_WIDTH * TILE_SIZE + 150, BOARD_HEIGHT * TILE_SIZE));
+        setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
         startGame();
@@ -120,8 +115,9 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
             }
         }
 
+        // Update score based on lines cleared
         if (linesCleared > 0) {
-            int timeBonus = (int) (1000 / Math.max(1, (System.currentTimeMillis() - startTime) / 100));
+            int timeBonus = (int) (1000 / Math.max(1, (System.currentTimeMillis() - startTime) / 100)); // Bonus for speed
             score += switch (linesCleared) {
                 case 1 -> 100 + timeBonus;
                 case 2 -> 300 + timeBonus;
@@ -129,6 +125,7 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
                 case 4 -> 800 + timeBonus;
                 default -> 0;
             };
+            // Increase game speed
             if (speed > 100) {
                 speed -= 10;
                 timer.setDelay(speed);
@@ -152,18 +149,6 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw playable board background
-        g.setColor(PLAYABLE_AREA_COLOR);
-        g.fillRect(0, 0, BOARD_WIDTH * TILE_SIZE, PANEL_HEIGHT);
-
-        // Draw vertical barrier between play area and info panel
-        g.setColor(BARRIER_COLOR);
-        g.fillRect(BOARD_WIDTH * TILE_SIZE, 0, 5, PANEL_HEIGHT);
-
-        // Draw info panel background
-        g.setColor(INFO_PANEL_COLOR);
-        g.fillRect(BOARD_WIDTH * TILE_SIZE + 5, 0, 150, PANEL_HEIGHT);
-
         // Draw board
         for (int row = 0; row < BOARD_HEIGHT; row++) {
             for (int col = 0; col < BOARD_WIDTH; col++) {
@@ -185,7 +170,7 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
         }
 
         // Draw next piece
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.drawString("Next Piece:", BOARD_WIDTH * TILE_SIZE + 20, 30);
         for (int row = 0; row < TETRIMINOS[nextPiece].length; row++) {
             for (int col = 0; col < TETRIMINOS[nextPiece][row].length; col++) {
@@ -197,7 +182,7 @@ public class TetrisGame extends JPanel implements ActionListener, KeyListener {
         }
 
         // Draw score
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.drawString("Score: " + score, BOARD_WIDTH * TILE_SIZE + 20, 150);
 
         // Draw game over message
